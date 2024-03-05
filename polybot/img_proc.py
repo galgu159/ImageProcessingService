@@ -68,13 +68,3 @@ class Img:
                     self.data[i][j] = 255  # Salt noise
                 elif ran_num > 0.8:
                     self.data[i][j] = 0  # Pepper noise
-
-
-    def concat(self, other_img, direction='horizontal'):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
-
-
-    def segment(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
