@@ -1,5 +1,6 @@
 from pathlib import Path
 from matplotlib.image import imread, imsave
+import random
 
 
 def rgb2gray(rgb):
@@ -22,7 +23,10 @@ class Img:
         Do not change the below implementation
         """
         new_path = self.path.with_name(self.path.stem + '_filtered' + self.path.suffix)
-        imsave(new_path, self.data, cmap='gray')
+        try:
+            imsave(new_path, self.data, cmap='gray')
+        except Exception as e:
+            print(e)
         return new_path
 
     def blur(self, blur_level=16):
@@ -55,12 +59,21 @@ class Img:
         raise NotImplementedError()
 
     def salt_n_pepper(self):
-        # TODO remove the `raise` below, and write your implementation
-        raise NotImplementedError()
+        rows = len(self.data)
+        columns = len(self.data[0])
+        for i in range(rows):
+            for j in range(columns):
+                ran_num = random.random()
+                if ran_num < 0.2:
+                    self.data[i][j] = 255  # Salt noise
+                elif ran_num > 0.8:
+                    self.data[i][j] = 0  # Pepper noise
+
 
     def concat(self, other_img, direction='horizontal'):
         # TODO remove the `raise` below, and write your implementation
         raise NotImplementedError()
+
 
     def segment(self):
         # TODO remove the `raise` below, and write your implementation

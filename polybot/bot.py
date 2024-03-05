@@ -75,4 +75,57 @@ class QuoteBot(Bot):
 
 
 class ImageProcessingBot(Bot):
-    pass
+    def handle_message(self, msg):
+        """Bot Main message handler"""
+        # logger.info(f'Incoming message: {msg}')
+        if "text" in msg:
+            self.send_text(msg['chat']['id'], f'Your original message: {msg["text"]}')
+        else:
+            # download the image
+            # logger.info(f'img_path is {img_path}')
+            new_path = ""
+            # if there is checkbox caption
+            if "caption" in msg:
+                try:
+                    img_path = self.download_user_photo(msg)
+                    if msg["caption"] == "Blur":
+                        # Send message to telegram bot
+                        self.send_text(msg['chat']['id'], "Blur filter in progress")
+                        new_img = Img(img_path)
+                        new_img.blur()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "Blur filter applied")
+                    elif msg["caption"] == "Contour":
+                        self.send_text(msg['chat']['id'], "Contour filter in progress")
+                        new_img = Img(img_path)
+                        new_img.contour()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "Contour filter applied")
+                    elif msg["caption"] == "Salt and pepper":  # concat, segment
+                        self.send_text(msg['chat']['id'], "salt_n_pepper filter in progress")
+                        new_img = Img(img_path)
+                        new_img.salt_n_pepper()
+                        new_path = new_img.save_img()
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "salt_n_pepper filter applied")
+                    elif msg["caption"] == "mix":
+                        self.send_text(msg['chat']['id'], "mix filter in progress")
+                        new_img = Img(img_path)
+                        new_img.salt_n_pepper()
+                        new_path = new_img.save_img()
+
+                        new_img2 = Img(new_path)
+                        new_img2.blur()
+                        new_path = new_img2.save_img()
+
+                        self.send_photo(msg["chat"]["id"], new_path)
+                        self.send_text(msg['chat']['id'], "mix filter applied")
+                    else:
+                        self.send_text(msg['chat']['id'], "Error invalid caption")
+                except Exception as e:
+                    logger.info(f"Error {e}")
+                    self.send_text(msg['chat']['id'], f'failed - try again later')
+            else:
+                self.send_text(msg['chat']['id'], "please provide caption")
